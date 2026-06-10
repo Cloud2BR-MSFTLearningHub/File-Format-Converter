@@ -1,0 +1,64 @@
+name: Deploy to GitHub Pages
+
+# main -> https://<owner>.github.io/File-Format-Converter/
+# test -> https://<owner>.github.io/File-Format-Converter/test/
+#
+# Both environments are published to the same `gh-pages` branch:
+#   - main builds into the repo root of gh-pages
+#   - test builds into the `test/` subfolder of gh-pages
+# `keep_files: true` ensures one environment never wipes out the other.
+#
+# Set the repository Pages source to: Branch = gh-pages, Folder = / (root).
+
+on:
+  push:
+    branches: [main, test]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Resolve environment
+        id: env
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "base=/File-Format-Converter/" >> "$GITHUB_OUTPUT"
+            echo "dest=." >> "$GITHUB_OUTPUT"
+          else
+            echo "base=/File-Format-Converter/test/" >> "$GITHUB_OUTPUT"
+            echo "dest=test" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_BASE: ${{ steps.env.outputs.base }}
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: ${{ steps.env.outputs.dest }}
+          keep_files: true
+          commit_message: "deploy ${{ github.ref_name }}: ${{ github.sha }}"

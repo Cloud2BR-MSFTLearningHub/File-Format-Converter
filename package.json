@@ -1,0 +1,37 @@
+{
+  "name": "file-format-converter",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "homepage": "https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "docx": "^9.0.3",
+    "file-saver": "^2.0.5",
+    "html2pdf.js": "^0.10.2",
+    "jszip": "^3.10.1",
+    "mammoth": "^1.8.0",
+    "marked": "^14.1.2",
+    "papaparse": "^5.4.1",
+    "pdfjs-dist": "^4.7.76",
+    "pptxgenjs": "^3.12.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "turndown": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "@types/papaparse": "^5.3.15",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/turndown": "^5.0.5",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}
