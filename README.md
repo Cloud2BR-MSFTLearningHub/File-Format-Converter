@@ -20,7 +20,6 @@ The project is deployed to GitHub Pages from the `gh-pages` branch, with two env
 | `main` | Production  | Stable release served at the site root.                     | [https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/](https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/)           |
 | `test` | Staging     | Preview of in-progress work served under the `/test/` path. | [https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/test/](https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/test/) |
 
-> Enable Pages once (Settings → Pages → Source: **Deploy from a branch**, Branch: `**gh-pages**`, Folder: **/ (root)**). Pushing to `main` updates the root site; pushing to `test` updates the `/test/` site. Each deploy keeps the other environment intact.
 
 ## Supported conversions
 
@@ -34,6 +33,7 @@ The project is deployed to GitHub Pages from the `gh-pages` branch, with two env
 | CSV            | JSON                                                 |
 | JSON           | CSV                                                  |
 
+> [!NOTE]
 > PDF → images renders each page to PNG. You can preview and save pages individually, and also download a ZIP containing every page.
 
 ## How it works
