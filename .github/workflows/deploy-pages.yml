@@ -1,32 +1,151 @@
 name: Deploy to GitHub Pages
 
-# Publishes BOTH environments in a single GitHub Pages artifact so it works
-# with the repository's "GitHub Actions" Pages source:
-#   main -> https://<owner>.github.io/File-Format-Converter/        (site root)
-#   test -> https://<owner>.github.io/File-Format-Converter/test/   (subpath)
+# Publishes BOTH environments in one Pages artifact:
+#   - main branch content at /
+#   - test branch content at /test/
 #
-# Only main triggers deployment because the protected `github-pages`
-# environment typically allows deployment from main only.
-#
-# The build still checks out both branches, so /test/ always reflects the
-# latest commit on the `test` branch whenever main deploys.
+# The protected `github-pages` environment only allows deployment from main.
+# To keep /test/ fresh, pushes to test trigger a workflow_dispatch run on main.
 
 on:
   push:
-    branches: [main]
+    branches: [main, test]
+    paths:
+      - '.github/workflows/deploy-pages.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'index.html'
+      - 'tsconfig.json'
+      - 'src/**'
+      - 'public/**'
+      - 'README.md'
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  access_check:
+    runs-on: ubuntu-latest
+    outputs:
+      can_checkout: ${{ steps.repo_check.outputs.can_checkout }}
+    steps:
+      - name: Check repository access for workflow token
+        id: repo_check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.repos.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              core.setOutput('can_checkout', 'true');
+            } catch (error) {
+              core.warning(`Repository access check failed: ${error.message}`);
+              core.setOutput('can_checkout', 'false');
+            }
+
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_site_inputs: ${{ steps.classify.outputs.has_site_inputs }}
+    steps:
+      - name: Classify changed paths
+        id: classify
+        uses: actions/github-script@v7
+        with:
+          script: |
+            if (context.eventName === 'workflow_dispatch') {
+              core.setOutput('has_site_inputs', 'true');
+              core.info('workflow_dispatch: forcing deploy path.');
+              return;
+            }
+
+            const commits = context.payload.commits || [];
+            const headMsg = (context.payload.head_commit && context.payload.head_commit.message) || '';
+            const allMsgs = [headMsg, ...commits.map(c => c.message || '')].join('\n');
+            if (/\[(skip[- ]deploy|deploy[- ]skip|no[- ]deploy)\]/i.test(allMsgs)) {
+              core.setOutput('has_site_inputs', 'false');
+              core.info('Commit message requested deploy skip.');
+              return;
+            }
+
+            const before = context.payload.before;
+            const after = context.sha;
+            if (!before || /^0+$/.test(before)) {
+              core.setOutput('has_site_inputs', 'true');
+              core.info('No reliable before SHA; falling back to full deploy path.');
+              return;
+            }
+
+            const { data: cmp } = await github.rest.repos.compareCommitsWithBasehead({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              basehead: `${before}...${after}`,
+            });
+
+            const changed = (cmp.files || []).map(f => f.filename);
+            if (changed.length >= 300) {
+              core.warning('Large/truncated compare result; forcing deploy path.');
+              core.setOutput('has_site_inputs', 'true');
+              return;
+            }
+
+            const hasSiteInputs = changed.some((p) =>
+              p === '.github/workflows/deploy-pages.yml' ||
+              p === 'package.json' ||
+              p === 'package-lock.json' ||
+              p === 'vite.config.ts' ||
+              p === 'index.html' ||
+              p === 'tsconfig.json' ||
+              p === 'README.md' ||
+              p.startsWith('src/') ||
+              p.startsWith('public/')
+            );
+
+            core.setOutput('has_site_inputs', hasSiteInputs ? 'true' : 'false');
+            core.info(`has_site_inputs=${hasSiteInputs}`);
+
+  trigger_main_from_test:
+    needs:
+      - access_check
+      - changes
+    if: |
+      needs.access_check.outputs.can_checkout == 'true' &&
+      needs.changes.outputs.has_site_inputs == 'true' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch main deployment run
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy-pages.yml',
+              ref: 'main',
+            });
+            core.info('Triggered deploy-pages.yml on main to publish / and /test/.');
+
   build:
+    needs:
+      - access_check
+      - changes
+    if: |
+      needs.access_check.outputs.can_checkout == 'true' &&
+      needs.changes.outputs.has_site_inputs == 'true' &&
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main branch
@@ -79,7 +198,14 @@ jobs:
           path: site
 
   deploy:
-    needs: build
+    if: |
+      needs.access_check.outputs.can_checkout == 'true' &&
+      needs.changes.outputs.has_site_inputs == 'true' &&
+      github.ref == 'refs/heads/main'
+    needs:
+      - access_check
+      - changes
+      - build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
