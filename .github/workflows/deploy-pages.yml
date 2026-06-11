@@ -5,12 +5,15 @@ name: Deploy to GitHub Pages
 #   main -> https://<owner>.github.io/File-Format-Converter/        (site root)
 #   test -> https://<owner>.github.io/File-Format-Converter/test/   (subpath)
 #
-# A push to either branch rebuilds both environments from their latest commits,
-# so neither one can clobber the other.
+# Only main triggers deployment because the protected `github-pages`
+# environment typically allows deployment from main only.
+#
+# The build still checks out both branches, so /test/ always reflects the
+# latest commit on the `test` branch whenever main deploys.
 
 on:
   push:
-    branches: [main, test]
+    branches: [main]
   workflow_dispatch:
 
 permissions:

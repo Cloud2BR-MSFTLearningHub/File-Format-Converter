@@ -2,12 +2,12 @@
 
 Atlanta, USA
 
-![GitHub](https://img.shields.io/badge/--181717?logo=github&logoColor=ffffff)  
+[![GitHub](https://img.shields.io/badge/--181717?logo=github&logoColor=ffffff)](https://github.com/)
 [Cloud2BR OSS - Learning Hub](https://github.com/Cloud2BR-MSFTLearningHub)
 
 Last updated: 2026-06-10
 
----
+----------
 
 > A free, private, **in-browser** file format converter deployed to GitHub Pages. Upload a file, pick a target format, click convert, and download the result. Every conversion runs locally in your browser — files are never uploaded to a server.
 
@@ -19,8 +19,6 @@ The project is deployed to GitHub Pages via GitHub Actions, with two environment
 | ------ | ----------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `main` | Production  | Stable release served at the site root.                     | [https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/](https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/)           |
 | `test` | Staging     | Preview of in-progress work served under the `/test/` path. | [https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/test/](https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/test/) |
-
-> Enable Pages once (Settings → Pages → Build and deployment → Source: **GitHub Actions**). Pushing to `main` updates the root site; pushing to `test` updates the `/test/` site. Each deploy rebuilds both environments, so neither clobbers the other.
 
 ## Supported conversions
 
@@ -63,7 +61,7 @@ npm run preview  # serve the built bundle locally
 ## Deployment
 
 `.github/workflows/deploy-pages.yml` builds the app and deploys it to GitHub  
-Pages on every push to `main` or `test`. Both environments ship in a single  
+Pages on every push to `main` (plus manual runs). Both environments ship in a single  
 Pages artifact:
 
 - `main` → built with base `/File-Format-Converter/` → served at the site root `/`.
@@ -75,7 +73,8 @@ This repo keeps the organization's standard pipelines:
 
 | Workflow                                          | Trigger                                 | What it does                                                                                                                                                                          |
 | ------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/deploy-pages.yml`              | Push to `main` / `test` and manual runs | Builds both environments and deploys them to GitHub Pages — `main` to the root site, `test` to the `/test/` staging path.                                                             |
+| `.github/workflows/deploy-pages.yml`              | Push to `main` and manual runs | Builds both environments and deploys them to GitHub Pages — `main` to the root site, `test` to the `/test/` staging path (built from the `test` branch).                           |
+| `.github/workflows/cleanup-deployments.yml`       | After Pages deploy success, daily schedule, and manual runs | Keeps only the two newest deployment records in the `github-pages` environment and prunes older ones.                                                                                |
 | `.github/workflows/validate_and_fix_markdown.yml` | Pull requests to `main`                 | Runs `markdownlint`, auto-fixes Markdown style issues when possible, validates the required header block for every tracked Markdown file, and pushes any fixes back to the PR branch. |
 | `.github/workflows/update-md-date.yml`            | Pull requests to `main`                 | Looks at the full PR diff, updates the `Last updated:` line inside the standard Markdown header block for changed Markdown files, and pushes the result back to the PR branch.        |
 | `.github/workflows/validate_and_fix_notebook.yml` | Pull requests to `main`                 | Validates Jupyter notebooks, normalizes widget metadata when needed, and commits notebook-format fixes back to the PR branch.                                                         |
