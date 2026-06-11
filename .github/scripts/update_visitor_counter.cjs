@@ -109,6 +109,12 @@ function updateMarkdownBadges(repoRoot, totalViews, refreshDate) {
 async function main() {
   const repoRoot = process.cwd();
   const repo = getRequiredEnv('REPO');
+
+  if (!process.env.TRAFFIC_TOKEN) {
+    console.log('TRAFFIC_TOKEN is not set — skipping visitor counter update.');
+    return;
+  }
+
   const refreshDate = new Date().toISOString().slice(0, 10);
   const trafficViews = await fetchTrafficViews(repo);
 
