@@ -4,6 +4,20 @@ export default function Footer() {
       <div className="site-footer__inner">
         <div className="credit">
           <span className="credit__role">Owner / Founder</span>
+          <div className="credit__profile">
+            <img
+              className="credit__avatar"
+              src="https://github.com/brown9804.png"
+              alt="Photo of @brown9804"
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
+            <div className="credit__profileText">
+              <span className="credit__name">@brown9804</span>
+              <span className="credit__tag">Owner and founder</span>
+            </div>
+          </div>
           <div className="credit__links">
             <a
               href="https://github.com/brown9804"
@@ -25,6 +39,20 @@ export default function Footer() {
 
         <div className="credit">
           <span className="credit__role">Organization</span>
+          <div className="credit__profile">
+            <img
+              className="credit__avatar credit__avatar--org"
+              src="https://github.com/Cloud2BR-MSFTLearningHub.png"
+              alt="Cloud2BR Open Source Microsoft Cloud Sandbox - Learning Hub logo"
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
+            <div className="credit__profileText">
+              <span className="credit__name">Cloud2BR Open Source</span>
+              <span className="credit__tag">Microsoft Cloud Sandbox - Learning Hub</span>
+            </div>
+          </div>
           <a
             className="credit__org"
             href="https://github.com/Cloud2BR-MSFTLearningHub"

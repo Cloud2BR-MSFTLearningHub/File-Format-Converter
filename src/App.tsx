@@ -146,6 +146,78 @@ export default function App() {
             <Preview result={result} />
           </section>
         )}
+
+        <section className="card about-card" aria-label="Owner and organization">
+          <div className="about-card__header">
+            <h2 className="about-card__title">Owner and Organization</h2>
+            <p className="about-card__subtitle">
+              Built and maintained by Cloud2BR Open Source Microsoft Cloud Sandbox
+              - Learning Hub.
+            </p>
+          </div>
+
+          <div className="about-card__grid">
+            <article className="about-profile">
+              <span className="about-profile__label">Owner / Founder</span>
+              <div className="about-profile__main">
+                <img
+                  className="about-profile__avatar"
+                  src="https://github.com/brown9804.png"
+                  alt="Photo of @brown9804"
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="about-profile__meta">
+                  <strong>@brown9804</strong>
+                  <span>Creator and maintainer</span>
+                </div>
+              </div>
+              <div className="about-profile__links">
+                <a href="https://github.com/brown9804" target="_blank" rel="noreferrer">
+                  GitHub
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/brown9804/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  LinkedIn
+                </a>
+              </div>
+            </article>
+
+            <article className="about-profile">
+              <span className="about-profile__label">Organization</span>
+              <div className="about-profile__main">
+                <img
+                  className="about-profile__avatar about-profile__avatar--org"
+                  src="https://github.com/Cloud2BR-MSFTLearningHub.png"
+                  alt="Cloud2BR Open Source Microsoft Cloud Sandbox - Learning Hub logo"
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="about-profile__meta">
+                  <strong>Cloud2BR Open Source</strong>
+                  <span>Microsoft Cloud Sandbox - Learning Hub</span>
+                </div>
+              </div>
+              <p className="about-profile__tagline">
+                Community demos, learning assets, and lightweight browser tools.
+              </p>
+              <div className="about-profile__links">
+                <a
+                  href="https://github.com/Cloud2BR-MSFTLearningHub"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Organization page
+                </a>
+              </div>
+            </article>
+          </div>
+        </section>
       </main>
 
       <Footer />

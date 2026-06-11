@@ -433,6 +433,93 @@
   padding: 8px 0;
 }
 
+/* ---- About card ---- */
+.about-card {
+  background: linear-gradient(140deg, #ffffff 0%, #f7f9ff 100%);
+}
+.about-card__header {
+  margin-bottom: 18px;
+}
+.about-card__title {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: -0.2px;
+}
+.about-card__subtitle {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+}
+.about-card__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+.about-profile {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.about-profile__label {
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-2);
+}
+.about-profile__main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.about-profile__avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface-sunken);
+}
+.about-profile__avatar--org {
+  border-radius: 16px;
+}
+.about-profile__meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.about-profile__meta strong {
+  color: var(--text);
+}
+.about-profile__meta span {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+.about-profile__tagline {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.about-profile__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.about-profile__links a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.about-profile__links a:hover {
+  text-decoration: underline;
+}
+
 /* ---- Footer ---- */
 .site-footer {
   background: var(--surface);
@@ -450,7 +537,7 @@
 .credit {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 .credit__role {
   text-transform: uppercase;
@@ -458,6 +545,34 @@
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--accent-2);
+}
+.credit__profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.credit__avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface-sunken);
+}
+.credit__avatar--org {
+  border-radius: 16px;
+}
+.credit__profileText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.credit__name {
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
 }
 .credit__links {
   display: flex;

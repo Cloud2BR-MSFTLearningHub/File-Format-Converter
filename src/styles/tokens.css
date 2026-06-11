@@ -29,7 +29,7 @@
   --warning: #c98a1b;
 
   /* Gradients for header / hero accents */
-  --grad-brand: linear-gradient(120deg, #4f46e5 0%, #7c5ce0 45%, #c2724f 100%);
+  --grad-brand: linear-gradient(120deg, #1d4ed8 0%, #2563eb 45%, #3b82f6 100%);
   --grad-soft: linear-gradient(135deg, #eef0ff 0%, #f7ede7 100%);
 
   /* Shape & elevation */
