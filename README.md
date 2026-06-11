@@ -69,13 +69,18 @@ Pages artifact:
 - `main` → built with base `/File-Format-Converter/` → served at the site root `/`.
 - `test` → built with base `/File-Format-Converter/test/` → served at `/test/`.
 
+Smart refresh behavior:
+
+- Push to `test` → refreshes `/test/` first, while production (`/`) is reused from cache when possible.
+- Push to `main` → refreshes production (`/`) first, while `/test/` is reused from cache when possible.
+
 ## Repository automation
 
 This repo keeps the organization's standard pipelines:
 
 | Workflow                                          | Trigger                                 | What it does                                                                                                                                                                          |
 | ------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/deploy-pages.yml`              | Push to `main` / `test` and manual runs | Deploys from protected `main` only, but pushes to `test` auto-dispatch a `main` run; published site includes `main` at `/` and `test` at `/test/`.                                 |
+| `.github/workflows/deploy-pages.yml`              | Push to `main` / `test` and manual runs | Deploys from protected `main` only; `test` pushes auto-dispatch a `main` run in test-refresh mode. Rebuild priority is branch-aware (`test` -> `/test/`, `main` -> `/`).            |
 | `.github/workflows/cleanup-deployments.yml`       | After Pages deploy success, daily schedule, and manual runs | Keeps only the two newest deployment records in the `github-pages` environment and prunes older ones.                                                                                |
 | `.github/workflows/validate_and_fix_markdown.yml` | Pull requests to `main`                 | Runs `markdownlint`, auto-fixes Markdown style issues when possible, validates the required header block for every tracked Markdown file, and pushes any fixes back to the PR branch. |
 | `.github/workflows/update-md-date.yml`            | Pull requests to `main`                 | Looks at the full PR diff, updates the `Last updated:` line inside the standard Markdown header block for changed Markdown files, and pushes the result back to the PR branch.        |
