@@ -1,4 +1,11 @@
-import { useCallback, useRef, useState } from 'react';
+import {
+  useCallback,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type DragEvent,
+  type KeyboardEvent,
+} from 'react';
 
 interface DropzoneProps {
   file: File | null;
@@ -17,7 +24,7 @@ export default function Dropzone({ file, onFile, onClear }: DropzoneProps) {
   const [dragging, setDragging] = useState(false);
 
   const handleDrop = useCallback(
-    (e: React.DragEvent) => {
+    (e: DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       setDragging(false);
       const dropped = e.dataTransfer.files?.[0];
@@ -48,7 +55,7 @@ export default function Dropzone({ file, onFile, onClear }: DropzoneProps) {
   return (
     <div
       className={`dropzone${dragging ? ' dropzone--active' : ''}`}
-      onDragOver={(e) => {
+      onDragOver={(e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setDragging(true);
       }}
@@ -57,7 +64,7 @@ export default function Dropzone({ file, onFile, onClear }: DropzoneProps) {
       onClick={() => inputRef.current?.click()}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
+      onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click();
       }}
     >
@@ -65,7 +72,7 @@ export default function Dropzone({ file, onFile, onClear }: DropzoneProps) {
         ref={inputRef}
         type="file"
         hidden
-        onChange={(e) => {
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
           const picked = e.target.files?.[0];
           if (picked) onFile(picked);
           e.target.value = '';
