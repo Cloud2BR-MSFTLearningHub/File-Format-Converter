@@ -177,13 +177,6 @@ export default function App() {
                 <a href="https://github.com/brown9804" target="_blank" rel="noreferrer">
                   GitHub
                 </a>
-                <a
-                  href="https://www.linkedin.com/in/brown9804/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  LinkedIn
-                </a>
               </div>
             </article>
 
