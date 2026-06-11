@@ -13,13 +13,14 @@ Last updated: 2026-06-10
 
 ## Live app
 
-The project is deployed to GitHub Pages from the `gh-pages` branch, with two environments driven by the `main` and `test` branches:
+The project is deployed to GitHub Pages via GitHub Actions, with two environments driven by the `main` and `test` branches:
 
 | Branch | Environment | Description                                                 | URL                                                                                                                                              |
 | ------ | ----------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `main` | Production  | Stable release served at the site root.                     | [https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/](https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/)           |
 | `test` | Staging     | Preview of in-progress work served under the `/test/` path. | [https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/test/](https://Cloud2BR-MSFTLearningHub.github.io/File-Format-Converter/test/) |
 
+> Enable Pages once (Settings → Pages → Build and deployment → Source: **GitHub Actions**). Pushing to `main` updates the root site; pushing to `test` updates the `/test/` site. Each deploy rebuilds both environments, so neither clobbers the other.
 
 ## Supported conversions
 
@@ -61,15 +62,16 @@ npm run preview  # serve the built bundle locally
 
 ## Deployment
 
-`.github/workflows/deploy-pages.yml` builds the app and publishes it to the  
-`gh-pages` branch on every push:
+`.github/workflows/deploy-pages.yml` builds the app and deploys it to GitHub
+Pages on every push to `main` or `test`. Both environments ship in a single
+Pages artifact:
 
-- Push to `**main**` → built with base `/File-Format-Converter/` → published to the root of `gh-pages` → served at `/`.
-- Push to `**test**` → built with base `/File-Format-Converter/test/` → published to the `test/` folder of `gh-pages` → served at `/test/`.
+- `main` → built with base `/File-Format-Converter/` → served at the site root `/`.
+- `test` → built with base `/File-Format-Converter/test/` → served at `/test/`.
 
-The workflow uses `keep_files: true`, so deploying one branch never removes the  
-other environment. Make sure the repository's Pages source is set to the  
-`gh-pages` branch (root folder).
+Each run rebuilds both environments from their latest commits, so one branch can
+never clobber the other. The repository's Pages source must be set to
+**GitHub Actions** (Settings → Pages → Build and deployment → Source).
 
 ## Repository automation
 
@@ -77,7 +79,7 @@ This repo keeps the organization's standard pipelines:
 
 | Workflow                                          | Trigger                                 | What it does                                                                                                                                                                          |
 | ------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/deploy-pages.yml`              | Push to `main` / `test` and manual runs | Builds the Vite app and deploys it to the `gh-pages` branch — `main` to the root site, `test` to the `/test/` staging path.                                                           |
+| `.github/workflows/deploy-pages.yml`              | Push to `main` / `test` and manual runs | Builds both environments and deploys them to GitHub Pages — `main` to the root site, `test` to the `/test/` staging path.                                                           |
 | `.github/workflows/validate_and_fix_markdown.yml` | Pull requests to `main`                 | Runs `markdownlint`, auto-fixes Markdown style issues when possible, validates the required header block for every tracked Markdown file, and pushes any fixes back to the PR branch. |
 | `.github/workflows/update-md-date.yml`            | Pull requests to `main`                 | Looks at the full PR diff, updates the `Last updated:` line inside the standard Markdown header block for changed Markdown files, and pushes the result back to the PR branch.        |
 | `.github/workflows/validate_and_fix_notebook.yml` | Pull requests to `main`                 | Validates Jupyter notebooks, normalizes widget metadata when needed, and commits notebook-format fixes back to the PR branch.                                                         |

@@ -1,14 +1,12 @@
 name: Deploy to GitHub Pages
 
-# main -> https://<owner>.github.io/File-Format-Converter/
-# test -> https://<owner>.github.io/File-Format-Converter/test/
+# Publishes BOTH environments in a single GitHub Pages artifact so it works
+# with the repository's "GitHub Actions" Pages source:
+#   main -> https://<owner>.github.io/File-Format-Converter/        (site root)
+#   test -> https://<owner>.github.io/File-Format-Converter/test/   (subpath)
 #
-# Both environments are published to the same `gh-pages` branch:
-#   - main builds into the repo root of gh-pages
-#   - test builds into the `test/` subfolder of gh-pages
-# `keep_files: true` ensures one environment never wipes out the other.
-#
-# Set the repository Pages source to: Branch = gh-pages, Folder = / (root).
+# A push to either branch rebuilds both environments from their latest commits,
+# so neither one can clobber the other.
 
 on:
   push:
@@ -16,49 +14,74 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: pages-${{ github.ref_name }}
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout main branch
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-src
+
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: test
+          path: test-src
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Resolve environment
-        id: env
-        run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            echo "base=/File-Format-Converter/" >> "$GITHUB_OUTPUT"
-            echo "dest=." >> "$GITHUB_OUTPUT"
-          else
-            echo "base=/File-Format-Converter/test/" >> "$GITHUB_OUTPUT"
-            echo "dest=test" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
+      - name: Build main (site root)
+        working-directory: main-src
         env:
-          VITE_BASE: ${{ steps.env.outputs.base }}
+          VITE_BASE: /File-Format-Converter/
+        run: |
+          npm ci
+          npm run build
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Build test (/test/ subpath)
+        working-directory: test-src
+        env:
+          VITE_BASE: /File-Format-Converter/test/
+        run: |
+          npm ci
+          npm run build
+
+      - name: Assemble combined site
+        run: |
+          mkdir -p site
+          cp -r main-src/dist/. site/
+          mkdir -p site/test
+          cp -r test-src/dist/. site/test/
+          touch site/.nojekyll
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          destination_dir: ${{ steps.env.outputs.dest }}
-          keep_files: true
-          commit_message: "deploy ${{ github.ref_name }}: ${{ github.sha }}"
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
