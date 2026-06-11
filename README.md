@@ -62,16 +62,12 @@ npm run preview  # serve the built bundle locally
 
 ## Deployment
 
-`.github/workflows/deploy-pages.yml` builds the app and deploys it to GitHub
-Pages on every push to `main` or `test`. Both environments ship in a single
+`.github/workflows/deploy-pages.yml` builds the app and deploys it to GitHub  
+Pages on every push to `main` or `test`. Both environments ship in a single  
 Pages artifact:
 
 - `main` → built with base `/File-Format-Converter/` → served at the site root `/`.
 - `test` → built with base `/File-Format-Converter/test/` → served at `/test/`.
-
-Each run rebuilds both environments from their latest commits, so one branch can
-never clobber the other. The repository's Pages source must be set to
-**GitHub Actions** (Settings → Pages → Build and deployment → Source).
 
 ## Repository automation
 
@@ -79,7 +75,7 @@ This repo keeps the organization's standard pipelines:
 
 | Workflow                                          | Trigger                                 | What it does                                                                                                                                                                          |
 | ------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/deploy-pages.yml`              | Push to `main` / `test` and manual runs | Builds both environments and deploys them to GitHub Pages — `main` to the root site, `test` to the `/test/` staging path.                                                           |
+| `.github/workflows/deploy-pages.yml`              | Push to `main` / `test` and manual runs | Builds both environments and deploys them to GitHub Pages — `main` to the root site, `test` to the `/test/` staging path.                                                             |
 | `.github/workflows/validate_and_fix_markdown.yml` | Pull requests to `main`                 | Runs `markdownlint`, auto-fixes Markdown style issues when possible, validates the required header block for every tracked Markdown file, and pushes any fixes back to the PR branch. |
 | `.github/workflows/update-md-date.yml`            | Pull requests to `main`                 | Looks at the full PR diff, updates the `Last updated:` line inside the standard Markdown header block for changed Markdown files, and pushes the result back to the PR branch.        |
 | `.github/workflows/validate_and_fix_notebook.yml` | Pull requests to `main`                 | Validates Jupyter notebooks, normalizes widget metadata when needed, and commits notebook-format fixes back to the PR branch.                                                         |
