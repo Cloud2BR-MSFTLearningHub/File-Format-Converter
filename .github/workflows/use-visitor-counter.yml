@@ -29,7 +29,7 @@ jobs:
           node-version: '20'
 
       - name: Run vendored visitor counter logic
-        run: node .github/scripts/update_visitor_counter.js
+        run: node .github/scripts/update_visitor_counter.cjs
         env:
           TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
           REPO: ${{ github.repository }}
