@@ -219,6 +219,7 @@ jobs:
       - name: Restore cached main dist
         id: cache_main
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: main-src/dist
           key: pages-main-dist-${{ steps.main_sha.outputs.sha }}
@@ -226,12 +227,31 @@ jobs:
       - name: Restore cached test dist
         id: cache_test
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: test-src/dist
           key: pages-test-dist-${{ steps.test_sha.outputs.sha }}
 
+      - name: Validate restored dist folders
+        id: dist_state
+        run: |
+          if [ -f "main-src/dist/index.html" ]; then
+            echo "main_dist_ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "main_dist_ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -f "test-src/dist/index.html" ]; then
+            echo "test_dist_ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "test_dist_ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build main (site root)
-        if: steps.target.outputs.target != 'test' || steps.cache_main.outputs.cache-hit != 'true'
+        if: |
+          steps.target.outputs.target != 'test' ||
+          steps.cache_main.outputs.cache-hit != 'true' ||
+          steps.dist_state.outputs.main_dist_ok != 'true'
         working-directory: main-src
         env:
           VITE_BASE: /File-Format-Converter/
@@ -240,7 +260,10 @@ jobs:
           npm run build
 
       - name: Build test (/test/ subpath)
-        if: steps.target.outputs.target == 'test' || steps.cache_test.outputs.cache-hit != 'true'
+        if: |
+          steps.target.outputs.target == 'test' ||
+          steps.cache_test.outputs.cache-hit != 'true' ||
+          steps.dist_state.outputs.test_dist_ok != 'true'
         working-directory: test-src
         env:
           VITE_BASE: /File-Format-Converter/test/
@@ -260,7 +283,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: site
 
@@ -280,4 +303,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
